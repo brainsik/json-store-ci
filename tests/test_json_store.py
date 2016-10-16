@@ -165,3 +165,13 @@ def test_set_mode():
         assert not st_mode & stat.S_IROTH
     finally:
         os.remove(store.path)
+
+
+def test_version_string():
+    if os.environ.get('JSON_STORE_OFFICIAL_PACKAGE') == 'true':
+        assert_not_equal(json_store.__version__, 'devel')
+        v = json_store.__version__
+        assert len(v.split('.')) >= 3, "Malformed version: {}".format(v)
+        return
+
+    assert_equal(json_store.__version__, 'devel')

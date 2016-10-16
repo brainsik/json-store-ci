@@ -7,8 +7,6 @@ everything out to disk.
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-__version__ = "2.1"
-
 import __builtin__
 import os
 import shutil
@@ -19,6 +17,13 @@ try:
     import simplejson as json
 except ImportError:
     import json
+
+__version__ = 'devel'
+version_txt = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           'version.txt')
+if os.path.exists(version_txt):
+    with open(version_txt) as v:
+        __version__ = v.readline().strip()
 
 
 class JSONStore(UserDict.DictMixin):
