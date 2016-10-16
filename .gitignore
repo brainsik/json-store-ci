@@ -4,6 +4,7 @@
 __pycache__
 
 # dev/test
+.anaconda
 .python-version
 .tox
 
