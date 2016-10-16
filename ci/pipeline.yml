@@ -1,0 +1,65 @@
+resources:
+  - name: source-code
+    type: git
+    source:
+      uri: https://github.com/brainsik/json-store-ci-demo.git
+      branch: master
+
+  - name: version
+    type: semver
+    source:
+      driver: git
+      initial_version: 2.2.0
+      uri: git@github.com:brainsik/json-store-ci-demo.git
+      branch: concourse-semver
+      file: version
+      private_key: {{github-private-key}}
+
+  - name: package
+    type: s3
+    source:
+      region_name: us-west-2
+      bucket: truss-brainsik-json-store-ci-demo
+      regexp: json-store-(.*).tar.gz
+      access_key_id: {{aws-access-key-id}}
+      secret_access_key: {{aws-secret-access-key}}
+      server_side_encryption: AES256
+      private: true
+
+jobs:
+  - name: unit-tests
+    plan:
+    - get: source-code
+      trigger: true
+    - task: run-unit-tests
+      file: source-code/ci/run-unit-tests.yml
+
+  - name: build-package
+    plan:
+    - get: source-code
+      passed:
+        - unit-tests
+      trigger: true
+    - get: version
+      params:
+        pre: rc
+      trigger: true
+    - task: build-source-package
+      file: source-code/ci/build-source-package.yml
+    - put: package
+      params:
+        file: source-package/*
+    - put: version
+      params: {file: version/version}
+
+  - name: package-tests
+    plan:
+    - get: source-code
+      passed:
+        - build-package
+    - get: package
+      passed:
+        - build-package
+      trigger: true
+    - task: run-package-tests
+      file: source-code/ci/run-package-tests.yml
