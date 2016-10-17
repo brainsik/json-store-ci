@@ -52,6 +52,8 @@ jobs:
   - name: test-package
     plan:
     - get: source-code
+      passed:
+        - build-package
     - get: package
       passed:
         - build-package
@@ -62,15 +64,17 @@ jobs:
   - name: release-it
     plan:
     - get: source-code
+      passed:
+        - test-package
     - get: package
       passed:
         - test-package
-    - task: create-release
-      file: source-code/ci/create-release.yml
+    - task: create-release-data
+      file: source-code/ci/create-release-data.yml
     - put: release
       params:
-        name: path/to/name/file
-        tag: path/to/tag/file
-        body: path/to/body/file
+        name: release-data/name
+        tag: release-data/tag
+        tag_prefix: v
         globs:
-        - paths/to/files/to/upload-*.tgz
+        - package/json-store-*.tar.gz

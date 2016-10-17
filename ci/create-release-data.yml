@@ -10,4 +10,4 @@ inputs:
 outputs:
   - name: release-data
 run:
-  path: source-code/ci/create-release.sh
+  path: source-code/ci/create-release-data.sh
