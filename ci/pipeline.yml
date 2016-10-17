@@ -26,24 +26,21 @@ resources:
       server_side_encryption: AES256
       private: true
 
-jobs:
-  - name: unit-tests
-    plan:
-    - get: source-code
-      trigger: true
-    - task: run-unit-tests
-      file: source-code/ci/run-unit-tests.yml
+  - name: release
+    type: github-release
+    source:
+      user: brainsik
+      repository: json-store-ci-demo
+      access_token: {{github-personal-access-token}}
 
+jobs:
   - name: build-package
     plan:
     - get: source-code
-      passed:
-        - unit-tests
       trigger: true
     - get: version
       params:
-        pre: rc
-      trigger: true
+        bump: patch
     - task: build-source-package
       file: source-code/ci/build-source-package.yml
     - put: package
@@ -52,7 +49,7 @@ jobs:
     - put: version
       params: {file: version/version}
 
-  - name: package-tests
+  - name: test-package
     plan:
     - get: source-code
       passed:
@@ -63,3 +60,18 @@ jobs:
       trigger: true
     - task: run-package-tests
       file: source-code/ci/run-package-tests.yml
+
+  - name: ship-it
+    plan:
+    - get: package
+      passed:
+        - test-package
+    - task: create-release
+      file: source-code/ci/create-release.yml
+    - put: release
+      params:
+        name: path/to/name/file
+        tag: path/to/tag/file
+        body: path/to/body/file
+        globs:
+        - paths/to/files/to/upload-*.tgz
