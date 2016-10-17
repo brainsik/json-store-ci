@@ -5,6 +5,7 @@ image_resource:
     repository: python
     tag: "2"
 inputs:
+  - name: source-code
   - name: package
 outputs:
   - name: release-data

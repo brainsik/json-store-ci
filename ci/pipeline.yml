@@ -52,8 +52,6 @@ jobs:
   - name: test-package
     plan:
     - get: source-code
-      passed:
-        - build-package
     - get: package
       passed:
         - build-package
@@ -61,8 +59,9 @@ jobs:
     - task: run-package-tests
       file: source-code/ci/run-package-tests.yml
 
-  - name: ship-it
+  - name: release-it
     plan:
+    - get: source-code
     - get: package
       passed:
         - test-package
