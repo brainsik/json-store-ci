@@ -76,5 +76,6 @@ jobs:
         name: release-data/name
         tag: release-data/tag
         tag_prefix: v
+        commitish: release-data/commitish
         globs:
         - package/json-store-*.tar.gz
