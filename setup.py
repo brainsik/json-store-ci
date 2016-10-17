@@ -9,7 +9,7 @@ if os.path.exists(version_txt):
     with open(version_txt) as v:
         version = v.readline().strip()
 
-setup(
+package_info = dict(
     name='json-store',
     version=version,
     packages=['json_store'],
@@ -34,3 +34,7 @@ setup(
         'json_store': ['version.txt'],
     },
 )
+
+
+if __name__ == '__main__':
+    setup(**package_info)
