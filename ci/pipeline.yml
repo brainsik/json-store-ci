@@ -49,7 +49,7 @@ jobs:
     - put: version
       params: {file: version/version}
 
-  - name: test-package
+  - name: unit-tests
     plan:
     - get: source-code
       passed:
@@ -65,10 +65,10 @@ jobs:
     plan:
     - get: source-code
       passed:
-        - test-package
+        - unit-tests
     - get: package
       passed:
-        - test-package
+        - unit-tests
     - task: create-release-data
       file: source-code/ci/create-release-data.yml
     - put: release
